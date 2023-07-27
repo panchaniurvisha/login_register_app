@@ -9,4 +9,9 @@ class Utils {
     RegExp regExp = RegExp(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
     return regExp.hasMatch(password);
   }
+
+  bool isValidName(String name) {
+    RegExp regExp = RegExp(r"^[a-zA-Z]{3,}");
+    return regExp.hasMatch(name);
+  }
 }
