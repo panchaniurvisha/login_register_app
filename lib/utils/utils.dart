@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:login_register_app/res/constant/app_colors.dart';
+
 class Utils {
   bool isValidEmail(String email) {
     RegExp regExp = RegExp(
@@ -13,5 +16,21 @@ class Utils {
   bool isValidName(String name) {
     RegExp regExp = RegExp(r"^[a-zA-Z]{3,}");
     return regExp.hasMatch(name);
+  }
+
+  ///Show SnackBar=================>
+  void showSnackBar(
+    BuildContext context, {
+    //()require parameter {}optional parameter
+    String? message,
+    String? label,
+    void Function()? onPressed,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message ?? ""),
+      backgroundColor: AppColors.darkGray,
+      behavior: SnackBarBehavior.floating,
+      action: SnackBarAction(label: label ?? "", onPressed: onPressed ?? () {}),
+    ));
   }
 }

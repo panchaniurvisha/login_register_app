@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:login_register_app/res/commen/appText.dart';
 import 'package:login_register_app/res/commen/app_elevated_button.dart';
@@ -23,6 +24,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   Utils utils = Utils();
   bool isSecurePassword = true;
+
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  User? userData;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -72,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     text: AppString.login,
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
+                        loginUser();
                         debugPrint("Home Screen---------->");
                       }
                     },
@@ -115,5 +120,39 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           )),
     );
+  }
+
+  ///Check Email in firebaseAuth--------------->>
+  loginUser() async {
+    try {
+      await firebaseAuth
+          .signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      )
+          .then((value) {
+        debugPrint("value-------->${value.user}");
+        if (value.user!.emailVerified) {
+          debugPrint("User is login");
+          userData = value.user;
+          Navigator.pushNamedAndRemoveUntil(
+              context, RoutesName.homeScreen, (route) => false);
+        } else {
+          debugPrint("Please verify the email");
+          utils.showSnackBar(
+            context,
+            message: "Please verify the email",
+            label: "Resent",
+            onPressed: () => value.user!.sendEmailVerification(),
+          );
+        }
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        debugPrint('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        debugPrint('Wrong password provided for that user.');
+      }
+    }
   }
 }

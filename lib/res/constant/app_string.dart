@@ -30,4 +30,7 @@ class AppString {
   static const String confirmPassword = "Confirm Password";
   static const String emptyConfirmPassword = "Please Enter re-password";
   static const String errorConfirmPassword = "Password Do not match";
+
+  ///Home Screen
+  static const String titleOfAppBar = "Home Screen";
 }

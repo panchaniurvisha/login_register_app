@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:login_register_app/utils/utils.dart';
 
@@ -27,6 +28,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController firstNameController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  User? user;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,9 +117,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   text: AppString.register,
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
+                      createUserInAuth();
                       debugPrint("Login Screen---------->");
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, RoutesName.loginScreen, (route) => false);
+                      // Navigator.pushNamedAndRemoveUntil(
+                      //     context, RoutesName.loginScreen, (route) => false);
                     }
                   },
                 ),
@@ -158,5 +163,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ));
+  }
+
+  createUserInAuth() async {
+    try {
+      await firebaseAuth
+          .createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      )
+          .then((value) {
+        debugPrint("Value----->${value.user}"); //user is used for access value
+        user = value.user;
+        user!.sendEmailVerification();
+        Navigator.pushNamedAndRemoveUntil(
+            context, RoutesName.loginScreen, (route) => false);
+        //  createUserData();
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        debugPrint('The password provided is too weak.');
+        utils.showSnackBar(context,
+            message: "The password provided is too weak.");
+      } else if (e.code == 'email-already-in-use') {
+        debugPrint('The account already exists for that email.');
+        utils.showSnackBar(context,
+            message: "The account already exists for that email.");
+      }
+    } catch (e) {
+      debugPrint("Error----$e");
+    }
   }
 }
