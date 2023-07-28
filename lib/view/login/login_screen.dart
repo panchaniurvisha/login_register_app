@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:login_register_app/res/commen/appText.dart';
 import 'package:login_register_app/res/commen/app_elevated_button.dart';
 import 'package:login_register_app/res/commen/app_textform_field.dart';
@@ -27,6 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   User? userData;
+  UserCredential? userCredential;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -88,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       size: height(context) / 50),
                   IconButton(
                     onPressed: () {
-                      //signInWithGoogle();
+                      signInWithGoogle();
                     },
                     icon: Image.asset(
                       AppImages.googleLogo,
@@ -154,5 +156,25 @@ class _LoginScreenState extends State<LoginScreen> {
         debugPrint('Wrong password provided for that user.');
       }
     }
+  }
+
+  signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    debugPrint("googleUser----->$googleUser");
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    userCredential = await firebaseAuth.signInWithCredential(credential);
+    userData = userCredential!.user;
+    debugPrint("userData---------->$userData");
+    utils.showSnackBar(context, message: "Login is SuccessFully");
   }
 }
