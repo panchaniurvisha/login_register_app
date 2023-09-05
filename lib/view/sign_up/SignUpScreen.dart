@@ -144,13 +144,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     AppText(
                         text: AppString.haveAccount,
                         fontWeight: FontWeight.w100,
-                        size: height(context) / 50),
+                        size: height(context) / 60),
                     TextButton(
                       child: AppText(
                           text: AppString.loginNow,
                           color: AppColors.lightBlueColor,
                           fontWeight: FontWeight.bold,
-                          size: height(context) / 50),
+                          size: height(context) / 60),
                       onPressed: () {
                         Navigator.pushNamedAndRemoveUntil(
                             context, RoutesName.loginScreen, (route) => false);
